@@ -204,7 +204,7 @@ export default {
       modal: false,
       menu2: false,
       loadingBool: false,
-      urlStem: "http://publicduck.online:5050/api",
+      urlStem: "https://publicduck.online:5050/api",
       dialog: false,
       statusDialogue: false,
       alignments: ["center"],

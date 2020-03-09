@@ -62,7 +62,7 @@ export default {
       ],
       activeQuotes: [],
       loadingBool: true,
-      urlStem: 'http://publicduck.online:5050/api'
+      urlStem: 'https://publicduck.online:5050/api'
     };
   },
   methods: {
