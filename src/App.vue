@@ -114,6 +114,9 @@ export default {
     eventBus.$on("proposalSelected", data => {
       this.activeProposal = data;
     });
+    eventBus.$on("activeState", data => {
+      this.activeComponent = data;
+    });
   }
 };
 </script>

@@ -2,7 +2,7 @@
   <v-card style="min-height: 500px" class="mx-auto">
     <div style="min-height: 95%" class="row">
       <div class="col">
-        <v-text-field color="amber darken-2" class="infield" label="Search by QuoteID"></v-text-field>
+        <v-text-field v-model="activeProposalNow" color="amber darken-2" class="infield" label="Search by QuoteID" @keydown.enter="setActiveProposal()"></v-text-field>
       </div>
     </div>
     <div class="row">
@@ -37,9 +37,13 @@
 </template>
 
 <script>
+import { eventBus } from "../main";
+
 export default {
   data: function() {
     return {
+      activeProposalNow: '',
+      activeComponentNow: 'myProposal',
       searchStatus: '',
       searchTypes: ["ProposalID", "Name", "Postcode"],
       searchType: "ProposalID",
@@ -83,6 +87,12 @@ export default {
     },
     logBroker() {
       console.log(this.brokerId)
+    },
+    setActiveProposal: function () {
+      eventBus.$emit('proposalSelected', this.activeProposalNow)
+      eventBus.$emit('activeState', this.activeComponentNow)
+
+
     }
   },
   created() {

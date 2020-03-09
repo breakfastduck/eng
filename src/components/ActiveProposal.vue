@@ -1,8 +1,7 @@
 <template>
-
   <v-card color="primary" style="min-height: 500px" class="mx-auto">
-      <v-progress-linear indeterminate color="yellow darken-2" :active="loadingBool"></v-progress-linear>
-   
+    <v-progress-linear indeterminate color="yellow darken-2" :active="loadingBool"></v-progress-linear>
+
     <div class="row">
       <div class="col" style="padding-left: 50px; padding-top: 40px">
         <v-card class="mx-auto" max-width="344" min-width="100%" min-height="415">
@@ -12,7 +11,47 @@
               {{ proposal.proposalId }}
             </p>
             <p>
-              <span class="title">{{ proposal.status }}</span>
+              <span class="title">
+                {{ proposal.status }}
+                <v-dialog v-model="statusDialogue" persistent max-width="600px">
+                  <template v-slot:activator="{ on }">
+                    <v-btn class="mx-2" x-small fab dark color="secondary" v-on="on">
+                      <v-icon dark>mdi-pencil</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-title>
+                      <span class="headline">
+                        <v-icon>mdi-account-details</v-icon>Update Status
+                      </span>
+                    </v-card-title>
+                    <v-card-text>
+                      <v-container>
+                        <v-row>
+                          <v-col>
+                            <v-overflow-btn
+                              v-model="proposal.status"
+                              class="my-2"
+                              :items="dropdown_font"
+                              label="Status"
+                              target="#dropdown-example"
+                            ></v-overflow-btn>
+                          </v-col>
+                        </v-row>
+                      </v-container>
+                      <small></small>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="secondary"
+                        text
+                        @click="updateStatus(); statusDialogue = false; text = 'Status Updated'"
+                      >Done</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </span>
             </p>
             <v-divider></v-divider>
 
@@ -46,7 +85,7 @@
         <v-card class="mx-auto" max-width="344" min-width="100%" min-height="415">
           <v-card-text>
             <p class="display-3 text-center">
-              <v-icon x-large>mdi-cash-multiple</v-icon> Quote Details
+              <v-icon x-large>mdi-cash-multiple</v-icon>Quote Details
             </p>
             <p>
               <span class="title">
@@ -59,13 +98,21 @@
                   </template>
                   <v-card>
                     <v-card-title>
-                      <span class="headline"><v-icon>mdi-cash-multiple</v-icon> Quote</span>
+                      <span class="headline">
+                        <v-icon>mdi-cash-multiple</v-icon>Quote
+                      </span>
                     </v-card-title>
                     <v-card-text>
                       <v-container>
                         <v-row>
                           <v-col cols="12" sm="6" md="4">
-                            <v-text-field v-model="proposal.advance" label="Advance" prefix="£" color="secondary" required></v-text-field>
+                            <v-text-field
+                              v-model="proposal.advance"
+                              label="Advance"
+                              prefix="£"
+                              color="secondary"
+                              required
+                            ></v-text-field>
                           </v-col>
                           <v-col cols="12" sm="6" md="4">
                             <v-text-field
@@ -77,7 +124,7 @@
                           </v-col>
                           <v-col cols="12" sm="6" md="4">
                             <v-text-field
-                             v-model="proposal.rate"
+                              v-model="proposal.rate"
                               label="Rate"
                               suffix="%"
                               color="secondary"
@@ -91,7 +138,11 @@
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="secondary" text @click="dialog = false; snackbar = true">Done</v-btn>
+                      <v-btn
+                        color="secondary"
+                        text
+                        @click="dialog = false; snackbar = true; text = 'Remember to recalculate!'"
+                      >Done</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>Recalculate
@@ -125,27 +176,13 @@
             </v-list>
             <v-divider></v-divider>
           </v-card-text>
-          
         </v-card>
-        
       </div>
-      
     </div>
-    <v-snackbar
-      v-model="snackbar"
-      timeout="5000"
-    >
+    <v-snackbar v-model="snackbar" timeout="5000">
       {{ text }}
-      <v-btn
-        color="secondary"
-        text
-        
-        @click="snackbar = false"
-      >
-        Close
-      </v-btn>
+      <v-btn color="secondary" text @click="snackbar = false">Close</v-btn>
     </v-snackbar>
-    
   </v-card>
 </template>
 
@@ -155,6 +192,13 @@ import { eventBus } from "../main";
 export default {
   data: function() {
     return {
+      dropdown_font: [
+        "Awaiting Decision",
+        "Approved",
+        "Declined (Credit)",
+        "Waiting For Documents",
+        "Documents Sent for Signature"
+      ],
       date: new Date().toISOString().substr(0, 10),
       menu: false,
       modal: false,
@@ -162,6 +206,7 @@ export default {
       loadingBool: false,
       urlStem: "http://publicduck.online:5050/api",
       dialog: false,
+      statusDialogue: false,
       alignments: ["center"],
       snackbar: false,
       text: "Remember to recalculate!",
@@ -230,6 +275,38 @@ export default {
       }, 1000);
 
       return data;
+    },
+    updateStatus: async function() {
+      this.request = {
+        update: this.proposal.status
+      };
+
+      this.loadingBool = true;
+
+      let fetchUrl =
+        this.urlStem + "/proposal/" + this.activeProposal + "/status";
+
+      let response = await fetch(fetchUrl, {
+        method: "PATCH",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(this.request),
+        cors: true
+      });
+
+      let data = await response.json();
+
+      await setTimeout(() => {
+        if (data.action == "n/a") {
+            this.text = 'Failed to Update'
+            this.snackbar = true;
+        } else {
+          this.loadingBool = false;
+          this.snackbar = true;
+        }
+      }, 1000);
     }
   },
   created() {
