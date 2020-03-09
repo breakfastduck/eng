@@ -93,8 +93,8 @@ export default {
     group: "",
     activeComponent: "myHome",
     pgTitle: "Wallasr",
-    brokerId: "0001",
-    activeProposal: "10005"
+    brokerId: "",
+    activeProposal: ""
   }),
   methods: {
     test() {

@@ -27,7 +27,7 @@
             class="elevation-1"
             :search="searchStatus"
             @click:row="rowClick"
-            item-key="quoteID"
+            item-key="proposalId"
             single-select
           ></v-data-table>
         </div>
@@ -66,9 +66,6 @@ export default {
     };
   },
   methods: {
-    rowClick() {
-
-    },
     getCustomerData: async function () {
         let fetchUrl = this.urlStem + '/proposals?brokerid=' + this.brokerId
         let response = await fetch(fetchUrl, {
@@ -93,6 +90,13 @@ export default {
       eventBus.$emit('activeState', this.activeComponentNow)
 
 
+    },
+    rowClick: function (item, row) {
+                    row.select(true);
+                    console.log(item.proposalId)
+                    eventBus.$emit('proposalSelected', item.proposalId)
+                    eventBus.$emit('activeState', this.activeComponentNow)
+                    //item  - selected item
     }
   },
   created() {
@@ -106,7 +110,7 @@ export default {
     console.log("deactivated");
   },
   props: ["pgTitle", "brokerId"]
-};
+}
 </script>
 
 <style>
