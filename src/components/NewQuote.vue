@@ -117,7 +117,7 @@
         <v-container fill-height fluid>
           <v-row align="center" justify="center">
             <v-col>
- <v-btn v-if="viewButton" class="mx-2" fab dark x-large color="secondary">
+ <v-btn @click="viewProposal()" v-if="viewButton" class="mx-2" fab dark x-large color="secondary">
       <v-icon dark>mdi-arrow-right-bold-circle-outline</v-icon>
     </v-btn>
 
@@ -143,13 +143,14 @@ export default {
       modal: false,
       menu2: false,
       loadingBool: false,
-      urlStem: "https://publicduck.online:5050/api",
+      urlStem: "http://publicduck.online:5050/api",
       dialog: false,
       alignments: ["center"],
       snackbar: false,
       text: "",
       viewButton: false,
       activeProposalNow: '',
+      activeComponentNow: 'myProposal',
       proposal: {
         name: "",
         mobile: "",
@@ -196,6 +197,9 @@ export default {
       }, 2000);
         
       this.response = content.body;
+    },
+    viewProposal() {
+        eventBus.$emit('activeState', this.activeComponentNow)
     }
   },
   created() {

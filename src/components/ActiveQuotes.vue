@@ -62,7 +62,7 @@ export default {
       ],
       activeQuotes: [],
       loadingBool: true,
-      urlStem: 'https://publicduck.online:5050/api'
+      urlStem: 'http://publicduck.online:5050/api'
     };
   },
   methods: {
@@ -78,7 +78,7 @@ export default {
         await setTimeout(() => {
           this.activeQuotes = data.proposals
           this.loadingBool = false
-        }, 2000);
+        }, 500);
 
                 return data
     },

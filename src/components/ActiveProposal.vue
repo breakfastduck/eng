@@ -204,7 +204,7 @@ export default {
       modal: false,
       menu2: false,
       loadingBool: false,
-      urlStem: "https://publicduck.online:5050/api",
+      urlStem: "http://publicduck.online:5050/api",
       dialog: false,
       statusDialogue: false,
       alignments: ["center"],
@@ -231,10 +231,10 @@ export default {
 
       console.log(data.proposal[0]);
 
-      await setTimeout(() => {
+      
         this.proposal = data.proposal[0];
         this.loadingBool = false;
-      }, 1000);
+      
 
       eventBus.$emit("dataPulled", this.viewButton);
       return data;

@@ -10,29 +10,12 @@
         <v-divider dark></v-divider>
         <v-card
           color="white"
-          style="max-width: 96%; padding: 25px; margin: 25px; min-height: 70%"
+          style="max-width: 96%; padding: 25px; margin: 25px; min-height: 60%"
           class="mx-auto dark--text"
         >
           <div style="min-height: 95%" class="row">
             <div class="col">
-              <br />
-              <p class="body-1">Welcome to Engager, our brand new broker portal.</p>
-              <p class="body-1">
-                If you have questions, check out the FAQ or submit any technical
-                issues to
-                our Technical Support Desk.
-              </p>
-              <p class="body-1">
-                We're proud of the platform we've built with Engager, but we
-                understand
-                that many of our partners choose to use their own in house platform. For that
-                reason,
-                all of the facilities we offer here (and more!) are also accesible via our new
-                API.
-                You
-                can see the full specification on our API Documentation.
-              </p>
-              <br />
+              
               <v-row justify="center">
                 <div class="col-8 text-center" align-center>
                   <v-text-field
