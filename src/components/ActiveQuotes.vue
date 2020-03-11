@@ -1,5 +1,5 @@
 <template>
-  <v-card style="min-height: 500px" class="mx-auto">
+  <v-card style="min-height: 570px" class="mx-auto">
     <div style="min-height: 95%" class="row">
       <div class="col">
         <v-text-field v-model="activeProposalNow" color="amber darken-2" class="infield" label="Search by QuoteID" @keydown.enter="setActiveProposal()"></v-text-field>
@@ -23,7 +23,7 @@
             item-color="amber"
             :headers="headers"
             :items="activeQuotes"
-            :items-per-page="5"
+            :items-per-page="10"
             class="elevation-1"
             :search="searchStatus"
             @click:row="rowClick"
@@ -52,7 +52,6 @@ export default {
         {
           text: "ProposalID",
           align: "start",
-          sortable: false,
           value: "proposalId",
           filterable: false
         },

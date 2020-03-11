@@ -1,9 +1,117 @@
 <template>
-  <v-card color="primary" style="min-height: 500px" class="mx-auto">
+  <v-card color="primary" style="min-height: 630px" class="mx-auto">
     <v-progress-linear indeterminate color="yellow darken-2" :active="loadingBool"></v-progress-linear>
 
     <div class="row">
-      <div class="col" style="padding-left: 50px; padding-top: 40px">
+      <div class="col" style="padding-left: 50px; padding-right: 50px; padding-top: 40px">
+        <v-card color="white" class="mx-auto" max-width="344" min-width="100%" max-height="35">
+          <v-card-text>
+            <span class="title">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    @click="notesDialogue = true; loadNotes()"
+                    class="mx-2"
+                    color="secondary"
+                    fab
+                    x-small
+                    dark
+                    v-on="on"
+                  >
+                    <v-icon x-small>mdi-note</v-icon>
+                  </v-btn>
+                </template>
+                <span>View Notes</span>
+              </v-tooltip>
+
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    @click="notePost = true; loadNotes()"
+                    class="mx-2"
+                    color="secondary"
+                    fab
+                    x-small
+                    dark
+                    v-on="on"
+                  >
+                    <v-icon x-small>mdi-file-plus</v-icon>
+                  </v-btn>
+                </template>
+                <span>Post Note</span>
+              </v-tooltip>
+
+              <v-dialog v-model="notesDialogue" persistent max-width="1100px">
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">
+                      <v-icon>mdi-account-details</v-icon>Notes
+                    </span>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+                        <v-col>
+                          <v-expansion-panels>
+                            <v-expansion-panel v-bind:key="note" v-for="note in notes">
+                              <v-expansion-panel-header>Posted At: {{note.createdAt}}</v-expansion-panel-header>
+                              <v-expansion-panel-content>{{note.noteBody}}</v-expansion-panel-content>
+                            </v-expansion-panel>
+                          </v-expansion-panels>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                    <small></small>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="secondary"
+                      text
+                      @click="notesDialogue = false; text = 'Notes'"
+                    >Done</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+
+              <v-dialog v-model="notePost" persistent max-width="1100px">
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">
+                      <v-icon>mdi-account-details</v-icon> Add Note
+                    </span>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+                        <v-col>
+                          <v-textarea
+                            v-model="noteBody"
+                            color="secondary"
+                            name="input-7-1"
+                            label="Note Text"
+                            hint="Write your note above"
+                            @keydown.enter="notePost = false; postNote(); text = 'Notes'"
+                          ></v-textarea>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                    <small></small>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="secondary" text @click="notePost = false; postNote(); text = 'Notes'">Done</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </span>
+          </v-card-text>
+        </v-card>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col" style="padding-left: 50px; padding-top: 20px">
         <v-card class="mx-auto" max-width="344" min-width="100%" min-height="415">
           <v-card-text>
             <p class="display-3 text-center">
@@ -81,7 +189,7 @@
           </v-card-text>
         </v-card>
       </div>
-      <div class="col" style="padding-right: 50px; padding-top: 40px">
+      <div class="col" style="padding-right: 50px; padding-top: 20px">
         <v-card class="mx-auto" max-width="344" min-width="100%" min-height="415">
           <v-card-text>
             <p class="display-3 text-center">
@@ -112,6 +220,7 @@
                               prefix="£"
                               color="secondary"
                               required
+                              @keydown.enter="dialog = false; snackbar = true; text = 'Remember to recalculate!'"
                             ></v-text-field>
                           </v-col>
                           <v-col cols="12" sm="6" md="4">
@@ -120,6 +229,8 @@
                               label="Term"
                               suffix="Months"
                               color="secondary"
+                              required
+                              @keydown.enter="dialog = false; snackbar = true; text = 'Remember to recalculate!'"
                             ></v-text-field>
                           </v-col>
                           <v-col cols="12" sm="6" md="4">
@@ -130,6 +241,7 @@
                               color="secondary"
                               persistent-hint
                               required
+                              @keydown.enter="dialog = false; snackbar = true; text = 'Remember to recalculate!'"
                             ></v-text-field>
                           </v-col>
                         </v-row>
@@ -179,7 +291,8 @@
         </v-card>
       </div>
     </div>
-    <v-snackbar v-model="snackbar" timeout="5000">
+
+    <v-snackbar v-model="snackbar">
       {{ text }}
       <v-btn color="secondary" text @click="snackbar = false">Close</v-btn>
     </v-snackbar>
@@ -215,7 +328,11 @@ export default {
       proposal: {},
       quote: {},
       response: "",
-      request: {}
+      request: {},
+      notesDialogue: false,
+      notes: {},
+      noteBody: "",
+      notePost: false
     };
   },
   methods: {
@@ -231,10 +348,8 @@ export default {
 
       console.log(data.proposal[0]);
 
-      
-        this.proposal = data.proposal[0];
-        this.loadingBool = false;
-      
+      this.proposal = data.proposal[0];
+      this.loadingBool = false;
 
       eventBus.$emit("dataPulled", this.viewButton);
       return data;
@@ -300,13 +415,46 @@ export default {
 
       await setTimeout(() => {
         if (data.action == "n/a") {
-            this.text = 'Failed to Update'
-            this.snackbar = true;
+          this.text = "Failed to Update";
+          this.snackbar = true;
         } else {
           this.loadingBool = false;
           this.snackbar = true;
         }
       }, 1000);
+    },
+    loadNotes: async function() {
+      let fetchUrl = this.urlStem + "/notes/" + this.activeProposal;
+      let response = await fetch(fetchUrl);
+
+      let data = await response.json();
+
+      this.notes = data.notes;
+
+      console.log(this.notes);
+    },
+    postNote: async function() {
+      let fetchUrl = this.urlStem + "/notes/new"
+      let body = {
+        proposalId: this.activeProposal,
+        noteBody: this.noteBody
+      }
+
+      let response = await fetch(fetchUrl, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
+
+      let data = await response.json()
+
+      console.log(data)
+
+      this.snackbar = true
+      this.text = 'Note added'
     }
   },
   created() {

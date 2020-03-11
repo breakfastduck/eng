@@ -3,7 +3,7 @@
     <div style="min-height: 100%" class="row">
       <div class="col" style="inherit">
         <p class="display-3 space text-center">
-          <span class="font-weight-regular">Login</span>
+          <span class="font-weight-regular">Register</span>
           <span class="font-weight-thin"> Below</span>
           
         </p>
@@ -30,11 +30,11 @@
                       class="infield"
                       label="Password"
                       type="password"
-                      @keydown.enter="login"
+                      @keydown.enter="createBroker"
                     ></v-text-field>
                     <br />
-                    <v-btn @click="login()" class="ma-2" tile outlined color="secondary">
-                      <v-icon left>mdi-login</v-icon>Login
+                    <v-btn @click="createBroker()" class="ma-2" tile outlined color="secondary">
+                      <v-icon left>mdi-plus</v-icon>Create
                     </v-btn>
                   </span>
                 </div>
@@ -79,12 +79,12 @@ export default {
     logBroker() {
       console.log(this.brokerId);
     },
-    login: async function() {
+    createBroker: async function() {
         let request = {
           brokerId: this.brokerInput,
           password: this.passwordInput
         }
-        let fetchUrl = this.urlStem + '/broker/login'
+        let fetchUrl = this.urlStem + '/broker/new'
         let response = await fetch(fetchUrl, {
         method: "POST",
         headers: {
@@ -107,7 +107,7 @@ export default {
     }
   },
   created() {
-    this.$emit("titleChanged", "Login");
+    this.$emit("titleChanged", "Register");
     console.log("home");
   },
   deactivated() {

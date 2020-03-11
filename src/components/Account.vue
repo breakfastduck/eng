@@ -3,8 +3,8 @@
     <div style="min-height: 100%" class="row">
       <div class="col" style="inherit">
         <p class="display-3 space text-center">
-          <span class="font-weight-regular">Login</span>
-          <span class="font-weight-thin"> Below</span>
+          <span class="font-weight-regular">My</span>
+          <span class="font-weight-thin"> Account</span>
           
         </p>
         <v-divider dark></v-divider>
@@ -18,24 +18,7 @@
               <v-row justify="center">
                 <div class="col-8 text-center" align-center>
                   <span>
-                    <v-text-field
-                      v-model="brokerInput"
-                      color="amber darken-2"
-                      class="infield"
-                      label="BrokerID"
-                    ></v-text-field>
-                    <v-text-field
-                      v-model="passwordInput"
-                      color="amber darken-2"
-                      class="infield"
-                      label="Password"
-                      type="password"
-                      @keydown.enter="login"
-                    ></v-text-field>
-                    <br />
-                    <v-btn @click="login()" class="ma-2" tile outlined color="secondary">
-                      <v-icon left>mdi-login</v-icon>Login
-                    </v-btn>
+                   
                   </span>
                 </div>
               </v-row>

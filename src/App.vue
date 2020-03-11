@@ -13,10 +13,9 @@
         <v-btn icon x-small color="secondary" @click="activeComponent = 'myProposal'">
           <v-icon>mdi-file-find</v-icon>
         </v-btn>
-        Active Proposal: {{ activeProposal }}
-      </span>
-      <v-divider v-if="activeProposal" class="mx-4" inset vertical></v-divider>
-      <span class="subheading">{{ brokerId }}</span>
+        Active Proposal: {{ activeProposal }} </span><v-divider v-if="activeProposal" class="mx-4" inset vertical></v-divider><v-btn icon v-if="brokerId" class="mx-2" fab dark x-small color="secondary" @click="clearBrokerId(); activeComponent = 'myHome'"><v-icon dark>mdi-exit-run</v-icon>
+</v-btn>
+      <span class="subheading">{{ brokerId }} </span>
       <v-divider class="mx-4" inset vertical></v-divider>
       <v-btn href="https://github.com/vuetifyjs/vuetify/releases/latest" target="_blank" text>
         <span class="mr-2">api docs</span>
@@ -26,35 +25,47 @@
     <v-navigation-drawer v-model="drawer" width="199" absolute temporary color="#e19101">
       <v-list nav dense>
         <v-list-item-group v-model="group" active-class="white--text text--accent-4">
-          <v-list-item @click="activeComponent = 'myHome'; drawer = false">
+          <v-list-item v-if="!brokerId" @click="activeComponent = 'myHome'; drawer = false">
             <v-list-item-icon>
-              <v-icon class="white--text">mdi-home</v-icon>
+              <v-icon class="white--text">mdi-login</v-icon>
             </v-list-item-icon>
-            <v-list-item-title class="white--text">Home</v-list-item-title>
+            <v-list-item-title class="white--text">Login</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="activeComponent = 'myActiveQuotes'; drawer = false">
+          <v-list-item v-if="!brokerId" @click="activeComponent = 'myNewBroker'; drawer = false">
+            <v-list-item-icon>
+              <v-icon class="white--text">mdi-plus</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title class="white--text">New Account</v-list-item-title>
+          </v-list-item>
+          <v-list-item v-if="brokerId" @click="activeComponent = 'myActiveQuotes'; drawer = false">
             <v-list-item-icon>
               <v-icon class="white--text">mdi-account-group</v-icon>
             </v-list-item-icon>
-            <v-list-item-title class="white--text">Active Proposals</v-list-item-title>
+            <v-list-item-title  class="white--text">Active Proposals</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="activeComponent = 'myNewQuote'; drawer = false">
+          <v-list-item v-if="brokerId" @click="activeComponent = 'myNewQuote'; drawer = false">
             <v-list-item-icon>
               <v-icon class="white--text">mdi-account-edit</v-icon>
             </v-list-item-icon>
             <v-list-item-title class="white--text">New Proposal</v-list-item-title>
           </v-list-item>
-          <v-list-item>
+          <v-list-item v-if="brokerId" @click="activeComponent = 'myReports'; drawer = false">
             <v-list-item-icon>
               <v-icon class="white--text">mdi-file-chart</v-icon>
             </v-list-item-icon>
             <v-list-item-title class="white--text">Reports</v-list-item-title>
           </v-list-item>
-          <v-list-item>
+          <v-list-item v-if="brokerId" @click="activeComponent = 'myAccount'; drawer = false">
             <v-list-item-icon>
               <v-icon class="white--text">mdi-cube-scan</v-icon>
             </v-list-item-icon>
             <v-list-item-title class="white--text">Account</v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon class="white--text">mdi-help</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title class="white--text">Help</v-list-item-title>
           </v-list-item>
         </v-list-item-group>
       </v-list>
@@ -76,6 +87,10 @@
         </transition>
       </v-container>
     </v-content>
+        <v-snackbar v-model="snackbar" :timeout="timeout">
+      Logged out!
+      <v-btn color="secondary" text @click="snackbar = false">Close</v-btn>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -84,28 +99,42 @@ import Home from "./components/Home.vue";
 import ActiveQuotes from "./components/ActiveQuotes.vue";
 import NewQuote from "./components/NewQuote.vue";
 import Proposal from "./components/ActiveProposal.vue"
+import Broker from "./components/NewBroker.vue"
+import Reports from "./components/Reports.vue"
+import Account from "./components/Account.vue"
 import { eventBus } from "./main";
 
 export default {
   name: "App",
   data: () => ({
+    timeout: 2000,
     drawer: false,
     group: "",
     activeComponent: "myHome",
     pgTitle: "Wallasr",
     brokerId: "",
-    activeProposal: ""
+    activeProposal: "",
+    snackbar: false,
+    loadingBool: false
   }),
   methods: {
     test() {
       console.log("triggerd");
-    }
+    },
+      clearBrokerId: function() {
+      this.snackbar = true
+      this.brokerId = '' 
+      this.activeProposal = ''
+    },
   },
   components: {
     myHome: Home,
     myActiveQuotes: ActiveQuotes,
     myNewQuote: NewQuote,
-    myProposal: Proposal
+    myProposal: Proposal,
+    myNewBroker: Broker,
+    myAccount: Account,
+    myReports: Reports
   },
   created() {
     eventBus.$on("brokerIdUpdated", data => {
