@@ -41,6 +41,23 @@
                 <span>Post Note</span>
               </v-tooltip>
 
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    @click="ruleShow = true; loadRules()"
+                    class="mx-2"
+                    color="secondary"
+                    fab
+                    x-small
+                    dark
+                    v-on="on"
+                  >
+                    <v-icon x-small>mdi-alarm-light</v-icon>
+                  </v-btn>
+                </template>
+                <span>View Rules</span>
+              </v-tooltip>
+
               <v-dialog v-model="notesDialogue" persistent max-width="1100px">
                 <v-card>
                   <v-card-title>
@@ -78,7 +95,7 @@
                 <v-card>
                   <v-card-title>
                     <span class="headline">
-                      <v-icon>mdi-account-details</v-icon> Add Note
+                      <v-icon>mdi-account-details</v-icon>Add Note
                     </span>
                   </v-card-title>
                   <v-card-text>
@@ -100,7 +117,58 @@
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="secondary" text @click="notePost = false; postNote(); text = 'Notes'">Done</v-btn>
+                    <v-btn
+                      color="secondary"
+                      text
+                      @click="notePost = false; postNote(); text = 'Notes'"
+                    >Done</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+
+              <v-dialog v-model="ruleShow" persistent max-width="1100px">
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">
+                      <v-icon>mdi-alarm-light</v-icon> Rules
+                    </span>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+                        <v-col>
+                          <v-simple-table>
+                            <template v-slot:default>
+                              <thead>
+                                <tr>
+                                  <th class="text-left">Code</th>
+                                  <th class="text-left">Name</th>
+                                  <th class="text-left">Result</th>
+                                  <th class="text-left">Severity</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr v-for="rule in rules" :key="rule.rulecode">
+                                  <td>{{ rule.rulecode }}</td>
+                                  <td>{{ rule.rulename }}</td>
+                                  <td>{{ rule.ruleresult }}</td>
+                                  <td>{{ rule.ruleseverity }}</td>
+                                </tr>
+                              </tbody>
+                            </template>
+                          </v-simple-table>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                    <small></small>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="secondary"
+                      text
+                      @click="ruleShow = false; text = 'Notes'"
+                    >Done</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
@@ -332,7 +400,9 @@ export default {
       notesDialogue: false,
       notes: {},
       noteBody: "",
-      notePost: false
+      notePost: false,
+      ruleShow: false,
+      rules: {}
     };
   },
   methods: {
@@ -429,16 +499,16 @@ export default {
 
       let data = await response.json();
 
-      this.notes = data.notes;
+      this.notes = data.notes.reverse();
 
       console.log(this.notes);
     },
     postNote: async function() {
-      let fetchUrl = this.urlStem + "/notes/new"
+      let fetchUrl = this.urlStem + "/notes/new";
       let body = {
         proposalId: this.activeProposal,
         noteBody: this.noteBody
-      }
+      };
 
       let response = await fetch(fetchUrl, {
         method: "POST",
@@ -449,12 +519,26 @@ export default {
         body: JSON.stringify(body)
       });
 
-      let data = await response.json()
+      let data = await response.json();
 
+      console.log(data);
+
+      this.snackbar = true;
+      this.text = "Note added";
+    },
+    loadRules: async function() {
+      this.loadingBool = true;
+
+      let fetchUrl = this.urlStem + "/rules?prop=" + this.activeProposal;
+      let response = await fetch(fetchUrl, {
+        cors: true
+      });
+
+      let data = await response.json()
       console.log(data)
 
-      this.snackbar = true
-      this.text = 'Note added'
+      this.rules = data;
+      this.loadingBool = false;
     }
   },
   created() {

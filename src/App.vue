@@ -112,7 +112,7 @@ export default {
     group: "",
     activeComponent: "myHome",
     pgTitle: "Wallasr",
-    brokerId: "",
+    brokerId: "0001",
     activeProposal: "",
     snackbar: false,
     loadingBool: false
